@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Парсаханов Мейрамбек - App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-overlay-1: rgba(15, 23, 42, 0.85);
+            --bg-overlay-2: rgba(15, 23, 42, 0.95);
+            --card-bg: rgba(30, 41, 59, 0.75);
+            --text-color: #f8fafc;
+            --subtext-color: #cbd5e1;
+            --accent-color: #38bdf8;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.cyber-theme {
+            --bg-overlay-1: rgba(10, 10, 25, 0.85);
+            --bg-overlay-2: rgba(5, 5, 15, 0.95);
+            --card-bg: rgba(20, 10, 35, 0.8);
+            --text-color: #ffffff;
+            --subtext-color: #e2e8f0;
+            --accent-color: #f43f5e;
+            --border-color: rgba(244, 63, 94, 0.3);
+        }
+
+        body.light-theme {
+            --bg-overlay-1: rgba(241, 245, 249, 0.88);
+            --bg-overlay-2: rgba(226, 232, 240, 0.95);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text-color: #0f172a;
+            --subtext-color: #334155;
+            --accent-color: #0284c7;
+            --border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(var(--bg-overlay-1), var(--bg-overlay-2)), 
+                        url('https://images.hdqwalls.com/wallpapers/neymar-jr-4k-2020-3b.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        #welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid var(--accent-color);
+            padding: 30px 25px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+            color: #f8fafc;
+        }
+
+        .modal-card h2 {
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .modal-card p {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .modal-card input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            outline: none;
+            text-align: center;
+        }
+
+        .modal-card input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .modal-card button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: var(--accent-color);
+            color: #0f172a;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .modal-card button:hover {
+            opacity: 0.9;
+        }
+
+        .music-ask {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .menu-btn {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .app-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .music-toggle-btn {
+            background: rgba(56, 189, 248, 0.2);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .music-toggle-btn.playing {
+            background: var(--accent-color);
+            color: #0f172a;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: var(--bg-overlay-2);
+            backdrop-filter: blur(15px);
+            z-index: 2000;
+            transition: 0.3s ease;
+            box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            color: var(--subtext-color);
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 12px;
+        }
+
+        .sidebar-menu a {
+            color: var(--subtext-color);
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-color);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1500;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 80px auto 30px;
+            padding: 0 20px;
+        }
+
+        .user-greeting {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--accent-color);
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .profile-card {
+            text-align: center;
+            padding: 30px 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .profile-img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--accent-color);
+            margin-bottom: 15px;
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin: 30px 0 15px;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--subtext-color);
+        }
+
+        .info-item i {
+            color: var(--accent-color);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            flex: 1;
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+        }
+
+        .insta { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .tiktok { background: #000000; border: 1px solid #334155; }
+        .whatsapp { background: #25D366; }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .gallery-item {
+            border-radius: 12px;
+            overflow: hidden;
+            height: 220px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .lightbox-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .lightbox-modal.active {
+            display: flex;
+        }
+
+        .lightbox-img {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 10px;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 0 25px rgba(0,0,0,0.8);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            font-size: 2.2rem;
+            color: white;
+            cursor: pointer;
+        }
+
+        .guestbook-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .guestbook-form input, .guestbook-form textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-color);
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        .guestbook-form textarea {
+            height: 90px;
+            resize: none;
+        }
+
+        .guestbook-form button {
+            padding: 12px 20px;
+            background: var(--accent-color);
+            color: #0f172a;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .guestbook-list {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg-item {
+            background: rgba(15, 23, 42, 0.4);
+            border-left: 4px solid var(--accent-color);
+            padding: 12px 15px;
+            border-radius: 8px;
+        }
+
+        .msg-author {
+            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .msg-time {
+            font-size: 0.75rem;
+            color: var(--subtext-color);
+            font-weight: normal;
+        }
+
+        .msg-text {
+            color: var(--subtext-color);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .settings-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .theme-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-style {
+            padding: 10px 15px;
+            background: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .floating-chat {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #25D366;
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+            z-index: 1200;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .floating-chat:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop preload="auto">
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="welcome-modal">
+        <div class="modal-card">
+            <h2>Қош келдіңіз! 👋</h2>
+            <p>Сайтты қарамас бұрын, аты-жөніңізді енгізіңіз:</p>
+            <input type="text" id="visitor-name" placeholder="Мысалы: Алихан Аскаров">
+            
+            <button onclick="enterSite()">Сайтқа кіру</button>
+
+            <div class="music-ask">
+                <input type="checkbox" id="play-music-check" checked style="width: 18px; height: 18px; margin: 0; cursor: pointer;">
+                <label for="play-music-check" style="cursor: pointer;">🎵 Музыканы қосу</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-header">
+        <div class="menu-btn" onclick="toggleMenu()">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="app-title">MEYRAMBEK APP</div>
+        
+        <div class="music-toggle-btn" id="music-btn" onclick="toggleMusic()" title="Музыканы қосу/өшіру">
+            <i class="fa-solid fa-music"></i>
+        </div>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 style="color: var(--accent-color);">Меню</h3>
+            <div class="close-btn" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></div>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#about" onclick="toggleMenu()"><i class="fa-solid fa-user"></i> Мен туралы</a></li>
+            <li><a href="#gallery" onclick="toggleMenu()"><i class="fa-solid fa-images"></i> Фотолар</a></li>
+            <li><a href="#guestbook" onclick="toggleMenu()"><i class="fa-solid fa-comments"></i> Пікір қалдыру</a></li>
+            <li><a href="#social" onclick="toggleMenu()"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
+            <li><a href="#social" onclick="toggleMenu()"><i class="fa-brands fa-tiktok"></i> TikTok</a></li>
+            <li><a href="#social" onclick="toggleMenu()"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
+            <li><a href="#game" onclick="toggleMenu()"><i class="fa-solid fa-gamepad"></i> Mini Game</a></li>
+            <li><a onclick="toggleMusic(); toggleMenu();"><i class="fa-solid fa-compact-disc"></i> Музыка On/Off</a></li>
+            <li><a href="#settings" onclick="toggleMenu()"><i class="fa-solid fa-gear"></i> Настройка</a></li>
+        </ul>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="container">
+        
+        <div class="user-greeting" id="greeting-text">
+            Қош келдіңіз, Қонақ!
+        </div>
+
+        <div class="profile-card">
+            <img src="photo3.jpg" alt="Парсаханов Мейрамбек" class="profile-img">
+            <h1>Парсаханов Мейрамбек</h1>
+            <p style="color: var(--accent-color); font-weight: 500;">Шымкент қаласы</p>
+        </div>
+
+        <div id="about"></div>
+        <h2 class="section-title"><i class="fa-solid fa-address-card"></i> Биография / Мен туралы</h2>
+        <div class="info-card">
+            <div class="info-item">
+                <i class="fa-solid fa-cake-candles"></i>
+                <span><strong>Туған күні:</strong> 08.03.2005</span>
+            </div>
+            <div class="info-item">
+                <i class="fa-solid fa-location-dot"></i>
+                <span><strong>Мекенжай:</strong> Шымкент, мкр. Асар</span>
+            </div>
+            <div class="info-item">
+                <i class="fa-solid fa-phone"></i>
+                <span><strong>Тел:</strong> 8 (702) 472-77-31</span>
+            </div>
+        </div>
+
+        <div id="social"></div>
+        <h2 class="section-title"><i class="fa-solid fa-share-nodes"></i> Социалдық желілер</h2>
+        <div class="social-links">
+            <a href="https://www.instagram.com/me1rambek17?igsh=MWV6Yzc2MDB2cjd0cw==" target="_blank" class="social-btn insta">
+                <i class="fa-brands fa-instagram"></i> Instagram
+            </a>
+            <a href="https://www.tiktok.com/@me1rambek17?_r=1&_t=ZS-98vyrMRUL25" target="_blank" class="social-btn tiktok">
+                <i class="fa-brands fa-tiktok"></i> TikTok
+            </a>
+            <a href="https://wa.me/77024727731" target="_blank" class="social-btn whatsapp">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+            </a>
+        </div>
+
+        <div id="gallery"></div>
+        <h2 class="section-title"><i class="fa-solid fa-camera"></i> Фотолар <span style="font-size:0.8rem; font-weight:normal; opacity:0.8;">(сайтта ашу үшін басыңыз)</span></h2>
+        <div class="gallery">
+            <div class="gallery-item" onclick="openLightbox('photo1.jpg')"><img src="photo1.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo2.jpg')"><img src="photo2.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo3.jpg')"><img src="photo3.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo4.jpg')"><img src="photo4.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo5.jpg')"><img src="photo5.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo6.jpg')"><img src="photo6.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo7.jpg')"><img src="photo7.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo8.jpg')"><img src="photo8.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo9.jpg')"><img src="photo9.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo10.jpg')"><img src="photo10.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo11.jpg')"><img src="photo11.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo12.jpg')"><img src="photo12.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo13.jpg')"><img src="photo13.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo14.jpg')"><img src="photo14.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo15.jpg')"><img src="photo15.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo16.jpg')"><img src="photo16.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo17.jpg')"><img src="photo17.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo18.jpg')"><img src="photo18.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo19.jpg')"><img src="photo19.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo20.jpg')"><img src="photo20.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo21.jpg')"><img src="photo21.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo22.jpg')"><img src="photo22.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo23.jpg')"><img src="photo23.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo24.jpg')"><img src="photo24.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo25.jpg')"><img src="photo25.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo26.jpg')"><img src="photo26.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo27.jpg')"><img src="photo27.jpg"></div>
+            <div class="gallery-item" onclick="openLightbox('photo28.jpg')"><img src="photo28.jpg"></div>
+        </div>
+
+        <div id="guestbook"></div>
+        <h2 class="section-title"><i class="fa-solid fa-comments"></i> Пікір / Жазба қалдыру</h2>
+        <div class="guestbook-card">
+            <div class="guestbook-form">
+                <input type="text" id="gb-name" placeholder="Атыңыз...">
+                <textarea id="gb-message" placeholder="Мейрамбекке тілек немесе пікір жазыңыз..."></textarea>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="addComment()">Сайтқа жариялау</button>
+                    <button onclick="sendToWhatsapp()" style="background: #25D366; color: white;">WhatsApp-қа жіберу</button>
+                </div>
+            </div>
+            <div class="guestbook-list" id="comments-list"></div>
+        </div>
+
+        <div id="game"></div>
+        <h2 class="section-title"><i class="fa-solid fa-gamepad"></i> Mini Game: Neymar Header King ⚽</h2>
+        <div class="settings-card" style="text-align: center;">
+            <p style="font-weight: 500; margin-bottom: 10px;">Неймармен баспен доп қайтарып, рекорд орнат!</p>
+            <div style="display: flex; justify-content: space-around; font-weight: bold; color: var(--accent-color); margin-bottom: 10px;">
+                <span>Упай: <span id="score-val">0</span></span>
+                <span>Рекорд: <span id="high-score-val">0</span></span>
+            </div>
+            <div id="game-area" style="position: relative; width: 100%; max-width: 350px; height: 350px; background: rgba(15, 23, 42, 0.8); border: 2px solid var(--accent-color); border-radius: 15px; margin: 0 auto; overflow: hidden; touch-action: none; cursor: pointer;">
+                <div id="game-ball" style="position: absolute; width: 35px; height: 35px; font-size: 28px; line-height: 35px; text-align: center; top: 0; left: 155px; user-select: none;">⚽</div>
+                <div id="neymar-player" style="position: absolute; width: 75px; height: 90px; bottom: 0; left: 137px; transition: transform 0.1s ease; user-select: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;">
+                    <svg width="70" height="85" viewBox="0 0 100 120" style="filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.7));">
+                        <path d="M 32,22 Q 50,-2 68,22 C 72,32 68,38 65,42 C 60,48 40,48 35,42 Z" fill="#c29b38" />
+                        <path d="M 35,16 Q 50,5 65,16 C 60,8 40,8 35,16 Z" fill="#e2c068" />
+                        <ellipse cx="50" cy="30" rx="14" ry="16" fill="#c48d62" />
+                        <circle cx="35" cy="32" r="3" fill="#b07a52" />
+                        <circle cx="65" cy="32" r="3" fill="#b07a52" />
+                        <path d="M 40,24 Q 44,22 47,24" stroke="#221208" stroke-width="1.8" fill="none" />
+                        <path d="M 53,24 Q 56,22 60,24" stroke="#221208" stroke-width="1.8" fill="none" />
+                        <ellipse cx="43.5" cy="27" rx="2" ry="1.5" fill="#221208" />
+                        <ellipse cx="56.5" cy="27" rx="2" ry="1.5" fill="#221208" />
+                        <path d="M 50,27 L 49,32 L 52,32" stroke="#a06b43" stroke-width="1.2" fill="none" />
+                        <path d="M 44,36 Q 50,40 56,36" stroke="#5c2612" stroke-width="1.5" fill="none" />
+                        <path d="M 42,39 Q 50,45 58,39 C 55,46 45,46 42,39 Z" fill="#2a1a0e" />
+                        <rect x="45" y="44" width="10" height="8" fill="#b07a52" />
+                        <path d="M 23,52 L 38,48 L 50,52 L 62,48 L 77,52 L 85,70 L 73,74 L 71,98 L 29,98 L 27,74 L 15,70 Z" fill="#121212" stroke="#000000" stroke-width="1" />
+                        <text x="50" y="78" font-family="'Arial Black', sans-serif" font-size="7" font-weight="900" fill="#ffffff" text-anchor="middle">Fly</text>
+                        <text x="50" y="85" font-family="'Arial Black', sans-serif" font-size="7.5" font-weight="900" fill="#ffffff" text-anchor="middle">Emirates</text>
+                    </svg>
+                    <div style="background: linear-gradient(135deg, #181818, #000000); color: #ffffff; font-size: 8.5px; font-weight: 900; padding: 1px 6px; border-radius: 3px; margin-top: -5px; border: 1px solid #ffffff;">NEYMAR JR 10</div>
+                </div>
+                <div id="start-screen" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; z-index: 10;">
+                    <button class="btn-style" onclick="startGame()" style="font-size: 1.1rem; padding: 12px 25px;">Ойынды бастау 🔥</button>
+                    <span id="start-msg" style="font-size: 0.85rem; color: #cbd5e1; padding: 0 10px;">Неймарды экранды басып немесе батырмалармен жылжыт!</span>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 15px; margin-top: 12px;">
+                <button class="btn-style" onmousedown="startMoveLeft()" onmouseup="stopMove()" ontouchstart="startMoveLeft()" ontouchend="stopMove()" style="padding: 12px 30px; font-size: 1.3rem;">⬅️ Сол</button>
+                <button class="btn-style" onmousedown="startMoveRight()" onmouseup="stopMove()" ontouchstart="startMoveRight()" ontouchend="stopMove()" style="padding: 12px 30px; font-size: 1.3rem;">Оң ➡️</button>
+            </div>
+        </div>
+
+        <div id="settings"></div>
+        <h2 class="section-title"><i class="fa-solid fa-sliders"></i> Настройка & Тақырыптар</h2>
+        <div class="settings-card">
+            <p><strong>Сайттың стилін өзгерту:</strong></p>
+            <div class="theme-buttons">
+                <button class="btn-style" onclick="setTheme('default')">Dark Blue (Default)</button>
+                <button class="btn-style" onclick="setTheme('cyber')" style="background: #f43f5e; color: white;">Neon Pink</button>
+                <button class="btn-style" onclick="setTheme('light')" style="background: #e2e8f0; color: #0f172a;">Light Mode</button>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--subtext-color); margin-top: 10px;">Атыңызды қайта енгізу үшін:</p>
+            <button class="btn-style" onclick="resetName()" style="margin-top: 5px;">Атты қайта енгізу</button>
+        </div>
+
+    </div>
+
+    <div class="lightbox-modal" id="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close">&times;</span>
+        <img class="lightbox-img" id="lightbox-img" src="" alt="Фото">
+    </div>
+
+    <a href="https://wa.me/77024727731" target="_blank" class="floating-chat" title="WhatsApp-пен байланысу">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <script>
+        const music = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+
+        function toggleMusic() {
+            if (music.paused) {
+                music.play().then(() => {
+                    musicBtn.classList.add('playing');
+                }).catch(err => alert("music.mp3 табылмады!"));
+            } else {
+                music.pause();
+                musicBtn.classList.remove('playing');
+            }
+        }
+
+        function enterSite() {
+            const nameInput = document.getElementById('visitor-name').value.trim();
+            const wantMusic = document.getElementById('play-music-check').checked;
+
+            if (nameInput !== "") {
+                const now = new Date();
+                const timeString = now.toLocaleDateString('kk-KZ') + ' ' + now.toLocaleTimeString('kk-KZ');
+                
+                let visitors = JSON.parse(localStorage.getItem('siteVisitors')) || [];
+                visitors.push({ name: nameInput, time: timeString });
+                localStorage.setItem('siteVisitors', JSON.stringify(visitors));
+
+                document.getElementById('greeting-text').innerText = "Қош келдіңіз, " + nameInput + "! 👋";
+                document.getElementById('welcome-modal').style.display = 'none';
+                document.getElementById('gb-name').value = nameInput;
+
+                if (wantMusic) {
+                    music.play().then(() => {
+                        musicBtn.classList.add('playing');
+                    }).catch(err => console.log("Музыка жүктелмеді: ", err));
+                }
+            } else {
+                alert("Өтініш, аты-жөніңізді жазыңыз!");
+            }
+        }
+
+        function resetName() {
+            document.getElementById('welcome-modal').style.display = 'flex';
+        }
+
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').classList.add('active');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        function setTheme(theme) {
+            document.body.classList.remove('cyber-theme', 'light-theme');
+            if(theme === 'cyber') document.body.classList.add('cyber-theme');
+            if(theme === 'light') document.body.classList.add('light-theme');
+        }
+
+        const comments = [
+            { name: "Ерасыл", text: "Сайт өте күшті шығыпты! РЕСПЕКТ 🔥", time: "Кеше 18:30" }
+        ];
+
+        function renderComments() {
+            const list = document.getElementById('comments-list');
+            list.innerHTML = "";
+            comments.forEach(c => {
+                list.innerHTML += `
+                    <div class="msg-item">
+                        <div class="msg-author">
+                            <span>${c.name}</span>
+                            <span class="msg-time">${c.time}</span>
+                        </div>
+                        <div class="msg-text">${c.text}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function addComment() {
+            const name = document.getElementById('gb-name').value.trim();
+            const text = document.getElementById('gb-message').value.trim();
+
+            if (!name || !text) {
+                alert("Өтініш, атыңыз бен пікіріңізді жазыңыз!");
+                return;
+            }
+
+            const now = new Date();
+            const timeStr = now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes();
+
+            comments.unshift({ name: name, text: text, time: "Бүгін " + timeStr });
+            renderComments();
+            document.getElementById('gb-message').value = "";
+        }
+
+        function sendToWhatsapp() {
+            const name = document.getElementById('gb-name').value.trim();
+            const text = document.getElementById('gb-message').value.trim();
+            if (!text) {
+                alert("Пікір жазыңыз!");
+                return;
+            }
+            const message = `Сәлем Мейрамбек! Мен сайтым арқылы жазып тұрмын.\n\nАтым: ${name}\nХабарлама: ${text}`;
+            window.open(`https://wa.me/77024727731?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        renderComments();
+
+        let score = 0;
+        let highScore = 0;
+        let gameInterval;
+        let moveInterval;
+        let isGameRunning = false;
+        
+        let ballX = 155;
+        let ballY = 0;
+        let ballSpeedY = 3.5;
+        let ballSpeedX = 2;
+        
+        let neymarX = 137;
+        const gameArea = document.getElementById('game-area');
+        const neymarPlayer = document.getElementById('neymar-player');
+        const ball = document.getElementById('game-ball');
+
+        function setNeymarX(x) {
+            const maxX = gameArea.clientWidth - 75;
+            if (x < 0) x = 0;
+            if (x > maxX) x = maxX;
+            neymarX = x;
+            neymarPlayer.style.left = neymarX + 'px';
+        }
+
+        function moveNeymar(clientX) {
+            const rect = gameArea.getBoundingClientRect();
+            setNeymarX(clientX - rect.left - 37.5);
+        }
+
+        gameArea.addEventListener('mousemove', (e) => {
+            if (isGameRunning) moveNeymar(e.clientX);
+        });
+
+        gameArea.addEventListener('touchstart', (e) => {
+            if (isGameRunning && e.touches.length > 0) moveNeymar(e.touches[0].clientX);
+        });
+
+        gameArea.addEventListener('touchmove', (e) => {
+            if (isGameRunning && e.touches.length > 0) moveNeymar(e.touches[0].clientX);
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (!isGameRunning) return;
+            if (e.key === 'ArrowLeft') setNeymarX(neymarX - 20);
+            if (e.key === 'ArrowRight') setNeymarX(neymarX + 20);
+        });
+
+        function startMoveLeft() {
+            clearInterval(moveInterval);
+            moveInterval = setInterval(() => { setNeymarX(neymarX - 8); }, 15);
+        }
+
+        function startMoveRight() {
+            clearInterval(moveInterval);
+            moveInterval = setInterval(() => { setNeymarX(neymarX + 8); }, 15);
+        }
+
+        function stopMove() {
+            clearInterval(moveInterval);
+        }
+
+        function startGame() {
+            document.getElementById('start-screen').style.display = 'none';
+            score = 0;
+            document.getElementById('score-val').innerText = score;
+            ballX = Math.random() * (gameArea.clientWidth - 40);
+            ballY = 0;
+            ballSpeedY = 3;
+            ballSpeedX = (Math.random() - 0.5) * 4;
+            isGameRunning = true;
+            
+            clearInterval(gameInterval);
+            gameInterval = setInterval(updateGame, 20);
+        }
+
+        function updateGame() {
+            const areaWidth = gameArea.clientWidth;
+            const areaHeight = gameArea.clientHeight;
+
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+
+            if (ballX <= 0 || ballX >= areaWidth - 35) {
+                ballSpeedX *= -1;
+            }
+
+            const neymarHeadTop = areaHeight - 75;
+            if (ballY + 35 >= neymarHeadTop && ballY + 35 <= neymarHeadTop + 25) {
+                if (ballX + 35 >= neymarX && ballX <= neymarX + 75) {
+                    ballSpeedY = -(Math.abs(ballSpeedY) + 0.3);
+                    ballSpeedX = (ballX + 17.5 - (neymarX + 37.5)) * 0.15;
+                    
+                    neymarPlayer.style.transform = 'scale(1.15) translateY(-8px)';
+                    setTimeout(() => { neymarPlayer.style.transform = 'scale(1) translateY(0)'; }, 150);
+
+                    score++;
+                    document.getElementById('score-val').innerText = score;
+                    if (score > highScore) {
+                        highScore = score;
+                        document.getElementById('high-score-val').innerText = highScore;
+                    }
+                }
+            }
+
+            if (ballY <= 0) {
+                ballSpeedY = Math.abs(ballSpeedY);
+            }
+
+            if (ballY >= areaHeight - 35) {
+                clearInterval(gameInterval);
+                isGameRunning = false;
+                document.getElementById('start-screen').style.display = 'flex';
+                document.getElementById('start-screen').querySelector('span').innerText = `Ойын аяқталды! Жиналған упай: ${score}`;
+            }
+
+            ball.style.left = ballX + 'px';
+            ball.style.top = ballY + 'px';
+        }
+    </script>
+</body>
+</html>
