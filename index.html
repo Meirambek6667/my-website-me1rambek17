@@ -765,6 +765,14 @@
                 visitors.push({ name: nameInput, time: timeString });
                 localStorage.setItem('siteVisitors', JSON.stringify(visitors));
 
+                // Google Таблицаға автоматты түрде дерек жіберу
+                fetch('https://script.google.com/macros/s/AKfycbxQ6iFh2mEQVwWn70r9ySQLAGAG5RqXanbmN4joHuJC9BBS-5c0bxtq4zCXKMIIBkG7oQ/exec', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: nameInput, time: timeString })
+                }).catch(err => console.log(err));
+
                 document.getElementById('greeting-text').innerText = "Қош келдіңіз, " + nameInput + "! 👋";
                 document.getElementById('welcome-modal').style.display = 'none';
                 document.getElementById('gb-name').value = nameInput;
